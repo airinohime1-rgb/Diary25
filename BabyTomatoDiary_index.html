@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Baby Tomato Diary — Writez Style</title>
+<style>
+:root{
+ --ink:#4a3540;--muted:#927784;--paper:#fffaf5;--rose:#e7a9b9;--rose2:#f4d6df;
+ --blue:#b8d9e8;--cream:#fff8f2;--line:rgba(90,50,70,.10);
+ --shadow:0 18px 50px rgba(70,42,54,.14)
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:Georgia,"Times New Roman",serif;
+ background:linear-gradient(135deg,#f8e9ee,#e9f4f7 48%,#fff3df);min-height:100vh}
+button,input,textarea{font:inherit}button{border:0;cursor:pointer;color:var(--ink)}
+.app{width:108.6957%;min-height:calc(100vh / .92);display:grid;grid-template-rows:auto 1fr;zoom:.92}
+.top{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+ background:rgba(255,255,255,.82);backdrop-filter:blur(14px);position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}.tomato{width:38px;height:38px;border-radius:50%;
+ background:#e88d9c;display:grid;place-items:center;box-shadow:inset -5px -6px 0 rgba(150,60,80,.1);font-size:21px}
+.actions,.editor-tools{display:flex;gap:8px;flex-wrap:wrap}.btn{padding:9px 13px;border-radius:14px;background:#fff;
+ border:1px solid var(--line);box-shadow:0 5px 14px rgba(80,45,60,.06)}.btn.primary{background:var(--rose);color:white}.btn.blue{background:var(--blue)}
+.layout{display:grid;grid-template-columns:245px 245px 1fr;min-height:0;height:calc(100vh / .92 - 63px)}
+.panel{background:rgba(255,255,255,.48);border-right:1px solid var(--line);overflow:auto;padding:18px 13px}
+.side-title{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--muted);margin:4px 8px 11px}
+.project{display:flex;align-items:center;gap:10px;width:100%;padding:11px;border-radius:15px;background:transparent;text-align:left;margin-bottom:7px}
+.project.active{background:#fff;box-shadow:0 8px 22px rgba(80,45,60,.08)}
+.cover-mini{width:40px;height:52px;border-radius:7px;display:grid;place-items:center;color:white;font-size:18px;flex:none}
+.meta{min-width:0}.name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.count{font-size:12px;color:var(--muted);margin-top:3px}
+.chapter{display:flex;align-items:flex-start;gap:10px;width:100%;padding:12px 10px;border-radius:13px;background:transparent;text-align:left;margin-bottom:5px}
+.chapter.active{background:#fff;box-shadow:0 6px 18px rgba(80,45,60,.07)}
+.chapter-no{width:25px;height:25px;border-radius:50%;background:var(--rose2);display:grid;place-items:center;font-size:12px;flex:none}
+.chapter-title{font-weight:600;line-height:1.25}.chapter-preview{font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.main{min-width:0;display:flex;flex-direction:column;background:rgba(255,250,245,.42)}
+.editor-head{padding:17px 25px 9px;display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line)}
+.crumb{font-size:12px;color:var(--muted)}.editor-title{font-size:29px;margin:4px 0 0;font-weight:600}
+.editor{width:min(850px,92%);margin:0 auto;flex:1;padding:26px 8px 60px;display:flex;flex-direction:column}
+.title-input{border:0;background:transparent;outline:0;font-size:34px;font-weight:600;color:var(--ink);width:100%;margin-bottom:10px}
+.ink-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:0 2px}
+.ink-label{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);font-weight:700}
+.ink-colors{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ink-swatch{width:25px;height:25px;border-radius:50%;padding:0;border:2px solid white;box-shadow:0 0 0 1px #dbcbd1;position:relative;transition:transform .12s ease,box-shadow .12s ease}
+.ink-swatch:hover{transform:scale(1.1)}
+.ink-swatch.selected{box-shadow:0 0 0 2px var(--ink);transform:scale(1.08)}
+.ink-swatch:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.ink-hint{font-size:11px;color:var(--muted)}
+.content{flex:1;min-height:420px;border:0;outline:0;background:rgba(255,255,255,.58);border-radius:18px;padding:25px;
+ font-size:18px;line-height:1.85;color:var(--ink);resize:none;box-shadow:0 10px 30px rgba(80,45,60,.06)}
+.content:focus{box-shadow:0 0 0 2px var(--rose2),0 10px 30px rgba(80,45,60,.06)}
+.status{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;padding:10px 4px}
+.empty{color:var(--muted);font-size:14px;padding:15px 8px}
+.mobile-nav{display:none}
+.modal{position:fixed;inset:0;background:rgba(45,25,35,.35);backdrop-filter:blur(7px);display:none;place-items:center;padding:20px;z-index:100}
+.modal.show{display:grid}.card{background:#fffaf8;border-radius:22px;padding:22px;width:min(560px,94vw);box-shadow:var(--shadow)}
+.card h2{margin-top:0}.field{margin:12px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.field input{width:100%;border:1px solid #ead9df;background:#fff;border-radius:12px;padding:11px;color:var(--ink)}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}.swatch{width:34px;height:34px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 1px #dbcbd1}
+.swatch.selected{box-shadow:0 0 0 2px var(--ink)}
+@media(max-width:900px){
+ .layout{grid-template-columns:205px 1fr}.chapter-panel{display:none}
+}
+@media(max-width:650px){
+ .layout{grid-template-columns:1fr;height:calc(100vh / .92 - 115px)}.project-panel{display:none}
+ .mobile-nav{display:flex;gap:6px;padding:8px;background:rgba(255,255,255,.78);border-bottom:1px solid var(--line)}
+ .mobile-nav button{flex:1;padding:9px;border-radius:12px;background:white}.mobile-nav button.active{background:var(--rose);color:white}
+ .editor-head{padding:13px 16px}.editor{width:94%;padding:18px 2px 30px}.title-input{font-size:28px}.content{min-height:360px;padding:19px;font-size:17px}
+ .ink-picker{gap:8px;margin-bottom:11px}.ink-colors{gap:7px}.ink-swatch{width:23px;height:23px}
+ .actions .extra{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="tomato">🍅</div><div>Baby Tomato Diary</div></div>
+ <div class="actions">
+  <button class="btn primary" id="newProject">＋ New project</button>
+  <button class="btn blue extra" id="exportBtn">Export</button>
+  <label class="btn extra">Import<input id="importInput" type="file" accept=".json" hidden></label>
+ </div>
+</header>
+
+<div class="mobile-nav">
+ <button id="mobileProjects" class="active">📚 Projects</button>
+ <button id="mobileChapters">☰ Chapters</button>
+ <button id="mobileEditor">✎ Editor</button>
+</div>
+
+<div class="layout">
+ <aside class="panel project-panel" id="projectPanel">
+  <div class="side-title">Projects</div>
+  <div id="projectList"></div>
+ </aside>
+
+ <aside class="panel chapter-panel" id="chapterPanel">
+  <div class="side-title">Chapters</div>
+  <button class="btn primary" style="width:100%;margin-bottom:12px" id="newChapter">＋ New chapter</button>
+  <div id="chapterList"></div>
+ </aside>
+
+ <main class="main" id="editorPanel">
+  <div class="editor-head">
+   <div>
+    <div class="crumb" id="crumb">My Diary / Chapter 1</div>
+    <div class="editor-title">Writing editor</div>
+   </div>
+   <div class="editor-tools">
+    <button class="btn" id="deleteChapter">🗑 Delete</button>
+    <button class="btn primary" id="saveBtn">Save</button>
+   </div>
+  </div>
+  <section class="editor">
+   <input id="titleInput" class="title-input" placeholder="Chapter title">
+   <div class="ink-picker"><span class="ink-label">Ink</span><div class="ink-colors" id="inkColors" role="group" aria-label="Writing ink colours"></div><span class="ink-hint" id="inkHint">Classic</span></div>
+   <textarea id="contentInput" class="content" placeholder="Start writing here..."></textarea>
+   <div class="status"><span id="saveStatus">Saved locally</span><span id="wordCount">0 words</span></div>
+  </section>
+ </main>
+</div>
+</div>
+
+<div class="modal" id="modal">
+ <div class="card">
+  <h2>Create a new project</h2>
+  <div class="field"><label>Project title</label><input id="projectTitle" placeholder="My new diary"></div>
+  <div class="field"><label>Cover colour</label><div class="swatches" id="swatches"></div></div>
+  <div class="modal-actions"><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="create">Create</button></div>
+ </div>
+</div>
+
+<script>
+const KEY="baby-tomato-writez-style-v1";
+const colors=["#d98da2","#c79ad9","#8fb8d8","#86bfa5","#e2aa76","#d97f7f","#9b91c9","#d5b77a"];
+const DEFAULT_INK="#4a3540";
+const inkColors=[
+ {name:"Classic",value:DEFAULT_INK},
+ {name:"Baby pink",value:"#d96f9a"},
+ {name:"Red",value:"#d93645"},
+ {name:"Cyan",value:"#009bb5"},
+ {name:"Yellow",value:"#a77a00"},
+ {name:"Orange",value:"#d97716"},
+ {name:"Purple",value:"#8959bd"},
+ {name:"Blue",value:"#3975c6"},
+ {name:"Green",value:"#358a64"}
+];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const starter={id:uid(),title:"My First Diary",color:"#d98da2",chapters:[
+ {id:uid(),title:"Welcome, little diary ♡",content:"This is your new Baby Tomato diary.\\n\\nWrite anything you want here."},
+ {id:uid(),title:"A little note",content:"Your thoughts, stories and memories can live here.\\n\\nCreate another chapter whenever you want."}
+]};
+let projects=JSON.parse(localStorage.getItem(KEY)||"null")||[starter];
+let projectIndex=0,chapterIndex=0,selectedColor=colors[0],dirty=false;
+const $=id=>document.getElementById(id);
+const current=()=>projects[projectIndex];
+const chapter=()=>current().chapters[chapterIndex];
+function saveData(){localStorage.setItem(KEY,JSON.stringify(projects));dirty=false;$("saveStatus").textContent="Saved locally";}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+function renderProjects(){
+ const box=$("projectList");box.innerHTML="";
+ projects.forEach((p,i)=>{
+  const b=document.createElement("button");b.className="project"+(i===projectIndex?" active":"");
+  b.innerHTML=`<span class="cover-mini" style="background:${p.color}">📖</span><span class="meta"><span class="name">${esc(p.title)}</span><span class="count">${p.chapters.length} chapters</span></span>`;
+  b.onclick=()=>{saveEditor(false);projectIndex=i;chapterIndex=0;render()};
+  box.appendChild(b);
+ });
+}
+function renderChapters(){
+ const box=$("chapterList");box.innerHTML="";
+ const p=current();
+ if(!p.chapters.length){box.innerHTML='<div class="empty">No chapters yet.</div>';return}
+ p.chapters.forEach((c,i)=>{
+  const b=document.createElement("button");b.className="chapter"+(i===chapterIndex?" active":"");
+  const preview=(c.content||"").replace(/\\s+/g," ").slice(0,55);
+  b.innerHTML=`<span class="chapter-no">${i+1}</span><span class="meta"><span class="chapter-title">${esc(c.title||"Untitled")}</span><span class="chapter-preview">${esc(preview||"Empty chapter")}</span></span>`;
+  b.onclick=()=>{saveEditor(false);chapterIndex=i;renderEditor()};
+  box.appendChild(b);
+ });
+}
+function renderEditor(){
+ const c=chapter(),p=current();
+ $("crumb").textContent=`${p.title} / Chapter ${chapterIndex+1}`;
+ $("titleInput").value=c?.title||"";
+ $("contentInput").value=c?.content||"";
+ $("contentInput").style.color=c?.ink||DEFAULT_INK;
+ renderInkPalette();
+ updateWords();renderChapters();renderProjects();
+}
+function render(){renderProjects();renderChapters();renderEditor()}
+function renderInkPalette(){
+ const box=$("inkColors"),active=chapter()?.ink||DEFAULT_INK;
+ if(!box)return;
+ box.innerHTML="";
+ inkColors.forEach(item=>{
+  const b=document.createElement("button");
+  b.type="button";b.className="ink-swatch"+(item.value===active?" selected":"");
+  b.style.backgroundColor=item.value;b.title=item.name;b.setAttribute("aria-label",item.name+" ink");
+  b.setAttribute("aria-pressed",String(item.value===active));
+  b.onclick=()=>{
+   saveEditor(false);
+   chapter().ink=item.value;
+   $("contentInput").style.color=item.value;
+   saveData();renderInkPalette();
+   $("inkHint").textContent=item.name;
+  };
+  box.appendChild(b);
+ });
+ const selected=inkColors.find(item=>item.value===active);
+ $("inkHint").textContent=selected?.name||"Custom";
+}
+function updateWords(){
+ const words=$("contentInput").value.trim()?$("contentInput").value.trim().split(/\\s+/).length:0;
+ $("wordCount").textContent=words+" "+(words===1?"word":"words");
+}
+function saveEditor(show=true){
+ const c=chapter();if(!c)return;
+ c.title=$("titleInput").value.trim()||"Untitled chapter";
+ c.content=$("contentInput").value;
+ saveData();
+ if(show){renderChapters();renderProjects()}
+}
+$("titleInput").addEventListener("input",()=>{dirty=true;$("saveStatus").textContent="Unsaved changes";renderChapters()});
+$("contentInput").addEventListener("input",()=>{dirty=true;$("saveStatus").textContent="Unsaved changes";updateWords()});
+$("saveBtn").onclick=()=>saveEditor(true);
+
+$("newChapter").onclick=()=>{
+ saveEditor(false);
+ const p=current();p.chapters.splice(chapterIndex+1,0,{id:uid(),title:"New chapter",content:"",ink:DEFAULT_INK});
+ chapterIndex++;saveData();render();$("titleInput").focus();
+};
+$("deleteChapter").onclick=()=>{
+ const p=current();
+ if(p.chapters.length<=1){alert("A project needs at least one chapter.");return}
+ if(!confirm("Delete this chapter?"))return;
+ p.chapters.splice(chapterIndex,1);chapterIndex=Math.max(0,Math.min(chapterIndex,p.chapters.length-1));saveData();render();
+};
+
+function openModal(){$("modal").classList.add("show");$("projectTitle").value="";selectedColor=colors[0];renderSwatches();$("projectTitle").focus()}
+function closeModal(){$("modal").classList.remove("show")}
+function renderSwatches(){
+ $("swatches").innerHTML="";
+ colors.forEach(c=>{
+  const b=document.createElement("button");b.className="swatch"+(c===selectedColor?" selected":"");b.style.background=c;
+  b.onclick=()=>{selectedColor=c;renderSwatches()};$("swatches").appendChild(b)
+ })
+}
+$("newProject").onclick=openModal;$("cancel").onclick=closeModal;
+$("create").onclick=()=>{
+ const title=$("projectTitle").value.trim()||"Untitled project";
+ projects.push({id:uid(),title,color:selectedColor,chapters:[{id:uid(),title:"First chapter",content:"",ink:DEFAULT_INK}]});
+ projectIndex=projects.length-1;chapterIndex=0;saveData();closeModal();render();$("titleInput").focus();
+};
+$("modal").onclick=e=>{if(e.target===$("modal"))closeModal()};
+
+$("exportBtn").onclick=()=>{
+ saveEditor(false);
+ const blob=new Blob([JSON.stringify(projects,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="baby-tomato-diary.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+$("importInput").onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{
+  const data=JSON.parse(await f.text());
+  if(!Array.isArray(data)||!data.length)throw 0;
+  // Accept both the new project/chapter format and the old book/page format.
+  projects=data.map(p=>p.chapters? p : {
+   id:p.id||uid(),title:p.title||"Imported project",color:p.color||colors[0],
+   chapters:(p.pages||[]).map(pg=>({id:pg.id||uid(),title:pg.title||"Untitled chapter",content:pg.content||"",ink:pg.ink||DEFAULT_INK}))
+  });
+  projects=projects.map(p=>({...p,chapters:(p.chapters.length?p.chapters:[{id:uid(),title:"First chapter",content:"",ink:DEFAULT_INK}]).map(c=>({...c,ink:c.ink||DEFAULT_INK}))}));
+  projectIndex=0;chapterIndex=0;saveData();render();
+ }catch{alert("That file could not be imported.")}e.target.value="";
+};
+
+document.addEventListener("keydown",e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveEditor(true)}
+});
+window.addEventListener("beforeunload",e=>{if(dirty){saveEditor(false)}});
+
+// Mobile navigation
+function mobileView(which){
+ const pp=$("projectPanel"),cp=$("chapterPanel"),ep=$("editorPanel");
+ pp.style.display=which==="projects"?"block":"none";
+ cp.style.display=which==="chapters"?"block":"none";
+ ep.style.display=which==="editor"?"flex":"none";
+ document.querySelectorAll(".mobile-nav button").forEach(x=>x.classList.remove("active"));
+ $(which==="projects"?"mobileProjects":which==="chapters"?"mobileChapters":"mobileEditor").classList.add("active");
+}
+$("mobileProjects").onclick=()=>mobileView("projects");
+$("mobileChapters").onclick=()=>mobileView("chapters");
+$("mobileEditor").onclick=()=>mobileView("editor");
+
+render();
+</script>
+</body>
+</html>
